@@ -2,16 +2,20 @@ package kz.iitu.lw1;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
-
+@Component
 public class AccountService {
+    @Value("jdbc:mysql://localhost:3306/atm")
     private String dbUrl;
+    @Value("root")
     private String dbUsername;
+    @Value("")
     private String dbPassword;
 
     Connection connection = null;
-
     public AccountService() throws SQLException {
     }
     //Factory method!!!!!!!
@@ -39,26 +43,11 @@ public class AccountService {
 
         try {
 
-            // Load the MySQL JDBC driver
-
             String driverName = "com.mysql.jdbc.Driver";
 
             Class.forName(driverName);
 
-
-            // Create a connection to the database
-
-            String serverName = "localhost";
-
-            String schema = "test";
-
-            String url = "jdbc:mysql://" + serverName +  "/" + schema;
-
-            String username = "username";
-
-            String password = "password";
-
-            connection = DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
 
 
 
@@ -79,12 +68,13 @@ public class AccountService {
         return connection;
     }
 
-    connection.close();
-    public void destroy() {
+
+    public void destroy() throws SQLException {
         this.closeConnections();
     }
 
-    public void closeConnections() {
+    public void closeConnections() throws SQLException {
+        connection.close();
         System.out.println("UserService.closeConnections");
     }
 }
